@@ -1,7 +1,7 @@
 package com.yoho.blamarket.service;
 
 import com.yoho.blamarket.repository.UserRepository;
-import com.yoho.blamarket.vo.UserVo;
+import com.yoho.blamarket.entity.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,12 +15,12 @@ public class UserService {
 
 
 
-    public List<UserVo> getUserList(){
-        List<UserVo> users = userRepository.findAll();
+    public List<UserEntity> getUserList(){
+        List<UserEntity> users = userRepository.findAll();
         return users;
     }
 
-    public UserVo getUser(String email){
+    public UserEntity getUser(String email){
         System.out.println(email);
         return userRepository.findByEmail(email);
     }

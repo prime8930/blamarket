@@ -1,17 +1,17 @@
 package com.yoho.blamarket.repository;
 
-import com.yoho.blamarket.vo.UserVo;
+import com.yoho.blamarket.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserVo, String> {
+public interface UserRepository extends JpaRepository<UserEntity, String> {
 
-    List<UserVo> findAll();
+    List<UserEntity> findAll();
 
-    UserVo findByEmail(String email);
+    UserEntity findByEmail(String email);
 
 
 }

@@ -3,7 +3,7 @@ package com.yoho.blamarket.controller;
 
 import com.yoho.blamarket.repository.UserRepository;
 import com.yoho.blamarket.service.UserService;
-import com.yoho.blamarket.vo.UserVo;
+import com.yoho.blamarket.entity.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,24 +21,24 @@ public class UserController {
     private UserRepository userRepository;
 
     @GetMapping("/login")
-    public List<UserVo> login(){
+    public List<UserEntity> login(){
 
-        List<UserVo> userList = userService.getUserList();
+        List<UserEntity> userList = userService.getUserList();
 
         return userList;
     }
 
     @GetMapping("/user")
-    public UserVo getUser(String email){
+    public UserEntity getUser(String email){
         System.out.println("controller : " + email);
-        UserVo userVo = userService.getUser(email);
+        UserEntity userVo = userService.getUser(email);
         System.out.println(userVo.toString());
         return userVo;
     }
 
 
     @PostMapping("/login")
-    public String login(@ModelAttribute UserVo user){
+    public String login(@ModelAttribute UserEntity user){
 
         return "abc";
     }
