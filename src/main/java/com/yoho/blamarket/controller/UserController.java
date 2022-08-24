@@ -1,10 +1,13 @@
 package com.yoho.blamarket.controller;
 
 
+import com.yoho.blamarket.dto.UserRegistDto;
 import com.yoho.blamarket.repository.UserRepository;
 import com.yoho.blamarket.service.UserService;
 import com.yoho.blamarket.entity.UserEntity;
+import com.yoho.blamarket.util.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,21 +17,16 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @GetMapping("/login")
-    public List<UserEntity> login(){
-
-        List<UserEntity> userList = userService.getUserList();
-
-        return userList;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    @GetMapping("/user")
+
+
+    @GetMapping("")
     public UserEntity getUser(String email){
         System.out.println("controller : " + email);
         UserEntity userVo = userService.getUser(email);
@@ -37,9 +35,12 @@ public class UserController {
     }
 
 
-    @PostMapping("/login")
-    public String login(@ModelAttribute UserEntity user){
+    @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiResponse regist(@RequestBody UserRegistDto request){
 
-        return "abc";
+        System.out.println(request.toString());
+        userService.regist(request);
+
+        return new ApiResponse();
     }
 }
