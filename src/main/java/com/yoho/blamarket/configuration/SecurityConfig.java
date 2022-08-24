@@ -7,6 +7,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -23,11 +24,16 @@ public class SecurityConfig {
                     .and()
                 .authorizeRequests()
                     .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .antMatchers("/**").authenticated()
+                        .antMatchers("/**").permitAll()
                         .anyRequest().permitAll()
                     .and()
                 .formLogin().disable()
         ;
         return http.build();
+    }
+
+    @Bean
+    public BCryptPasswordEncoder encodePassword(){
+        return new BCryptPasswordEncoder();
     }
 }
