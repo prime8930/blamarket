@@ -33,7 +33,7 @@ public class ItemEntity {
 
     String usedDate;
 
-    String regostDate;
+    String registDate;
 
     String status;
 
