@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.util.Date;
@@ -15,12 +17,15 @@ import java.util.Date;
 @NoArgsConstructor
 @Entity(name="user")
 public class UserEntity {
+    
 
     @Id
     private String email;
 
+    @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
     private String name;
 
     private String company;
@@ -32,6 +37,10 @@ public class UserEntity {
     private Date regDate;
 
     private Date editDate;
+
+    public void encryptPassword(PasswordEncoder passwordEncoder){
+        password = passwordEncoder.encode(password);
+    }
 
 
 }
