@@ -1,5 +1,6 @@
-package com.yoho.blamarket.dto;
+package com.yoho.blamarket.dto.user;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,7 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Data
-public class UserRegistDto {
+@Builder
+public class RequestUserRegistDto {
 
     private String email;
     private String password;

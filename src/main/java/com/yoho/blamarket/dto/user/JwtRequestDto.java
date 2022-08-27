@@ -1,4 +1,4 @@
-package com.yoho.blamarket.dto;
+package com.yoho.blamarket.dto.user;
 
 import lombok.Getter;
 import lombok.Setter;
