@@ -25,7 +25,6 @@ public class JwtUserDto implements UserDetails {
 
     @Override
     public String getUsername() {
-        System.out.println("UserDetails : " + this.email);
         return email;
     }
 

@@ -47,7 +47,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 chain.doFilter(request, response);
                 return;
             }
-            System.out.println("header : " + header);
             token = request.getHeader(JwtProperties.HEADER_STRING)
                     .replace(JwtProperties.TOKEN_PREFIX, "");
         } catch (Exception ignored) {

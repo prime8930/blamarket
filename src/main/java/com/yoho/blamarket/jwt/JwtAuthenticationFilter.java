@@ -33,7 +33,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             HttpServletRequest request,
             HttpServletResponse response
     ) throws AuthenticationException {
-        System.out.println("JwtAuthenticationFilter : 진입");
 
         // 로그인할 때 입력한 username과 password를 가지고 authenticationToken를 생성한다.
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(

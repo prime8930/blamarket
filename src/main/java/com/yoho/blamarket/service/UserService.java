@@ -1,13 +1,16 @@
 package com.yoho.blamarket.service;
 
 import com.yoho.blamarket.common.ApiResponse;
+import com.yoho.blamarket.common.Util;
+import com.yoho.blamarket.dto.user.RequestEditUserDto;
 import com.yoho.blamarket.dto.user.RequestUserRegistDto;
-import com.yoho.blamarket.dto.user.ResponseUserRegistDto;
+import com.yoho.blamarket.dto.user.ResponseUserDto;
 import com.yoho.blamarket.repository.UserRepository;
 import com.yoho.blamarket.entity.UserEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +51,7 @@ public class UserService {
             userEntity = userRepository.save(userEntity);
 
             // entity그대로 리턴하면 비밀번호도 들어가니까 응답용 dto에 옮김
-            ResponseUserRegistDto responseUserRegistDto = ResponseUserRegistDto.builder()
+            ResponseUserDto responseUserRegistDto = ResponseUserDto.builder()
                     .email(userEntity.getEmail())
                     .name(userEntity.getName())
                     .company(userEntity.getCompany())
@@ -76,10 +79,58 @@ public class UserService {
         return users;
     }
 
-    public UserEntity getUser(String email){
-        System.out.println(email);
-        return userRepository.findByEmail(email);
+    public ApiResponse getUser(String email){
+        ApiResponse apiResponse = null;
+        UserEntity userEntity = userRepository.findByEmail(email);
+        ResponseUserDto responseUserDto = ResponseUserDto.builder()
+                .email(userEntity.getEmail())
+                .name(userEntity.getName())
+                .company(userEntity.getCompany())
+                .build()
+                ;
+
+        apiResponse = new ApiResponse(HttpStatus.OK, "회원 조회 성공");
+        apiResponse.putData("user", responseUserDto);
+
+        return apiResponse;
     }
 
 
+    public ApiResponse editUser(RequestEditUserDto requestEditUserDto) {
+        ApiResponse apiResponse = null;
+
+        UserEntity userEntity = UserEntity.builder()
+                .email(requestEditUserDto.getEmail())
+                .password(requestEditUserDto.getPassword())
+                .name(requestEditUserDto.getName())
+                .company(requestEditUserDto.getCompany())
+                .build()
+                ;
+
+        try{
+            userEntity = userRepository.save(userEntity);
+        }catch (Exception e){
+            log.error(e.toString());
+        }
+
+        return apiResponse;
+    }
+
+
+    public ApiResponse deleteUser(String email) {
+        ApiResponse apiResponse = null;
+
+        UserEntity userEntity = UserEntity.builder()
+                .email(email)
+                .build()
+                ;
+
+        try{
+            userEntity = userRepository.save(userEntity);
+        }catch (Exception e){
+            log.error(e.toString());
+        }
+
+        return apiResponse;
+    }
 }

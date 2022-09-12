@@ -40,7 +40,7 @@ public class UserEntity {
 
     private Date editDate;
 
-    public List<String> getRoleList() {
+    private List<String> getRoleList() {
         if (this.roles.length() > 0) {
             return Arrays.asList(this.roles.split(","));
         }
