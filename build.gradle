@@ -1,7 +1,7 @@
 plugins {
 	id 'org.springframework.boot' version '2.7.2'
 	id 'io.spring.dependency-management' version '1.0.12.RELEASE'
-	id 'org.asciidoctor.convert' version '1.5.8'
+//	id 'org.asciidoctor.convert' version '1.5.8'
 	id 'java'
 	id 'war'
 }
@@ -9,6 +9,14 @@ plugins {
 group = 'com.yoho'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
+
+bootWar {
+	archiveBaseName="blamarket"
+	archiveVersion="0.0.1-SNAPSHOT"
+}
+
+bootWar.enabled = true
+war.enabled = true
 
 configurations {
 	compileOnly {
@@ -36,8 +44,17 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 	testImplementation 'org.springframework.security:spring-security-test'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	// https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client
 	implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.7.4'
+
+	// https://mvnrepository.com/artifact/javax.inject/javax.inject
+	implementation group: 'javax.inject', name: 'javax.inject', version: '1'
+
+	// JWT
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2'
 
 }
 
@@ -46,7 +63,7 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-tasks.named('asciidoctor') {
-	inputs.dir snippetsDir
-	dependsOn test
-}
+//tasks.named('asciidoctor') {
+//	inputs.dir snippetsDir
+//	dependsOn test
+//}

@@ -15,6 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 @Service
 @Slf4j
@@ -38,8 +40,15 @@ public class UserService {
         ApiResponse apiResponse = null;
 
         try{
+            UserEntity userEntity = userRepository.findByEmail(userRegistDto.getEmail());
+            if (userEntity != null){
+                log.info("userEntity is null");
+                apiResponse = new ApiResponse(400, "회원 가입 실패");
+                apiResponse.putData("error", "이미 가입된 회원입니다.");
+                return apiResponse;
+            }
             //dto로 받은 값을 Entity에 전달.
-            UserEntity userEntity = UserEntity.builder()
+            userEntity = UserEntity.builder()
                     .email(userRegistDto.getEmail())
                     .password(userRegistDto.getPassword())
                     .name(userRegistDto.getName())
@@ -59,13 +68,13 @@ public class UserService {
                     ;
 
             // api리스폰스를 만들어 리스폰스 규칙을 설정
-            apiResponse = new ApiResponse(HttpStatus.OK, "회원 가입 성공");
+            apiResponse = new ApiResponse(200, "회원 가입 성공");
             // api리스폰스에 리스폰스 데이터를 설정
-            apiResponse.putData("user", responseUserRegistDto);
+            apiResponse.putData("data", responseUserRegistDto);
 
 
         } catch (Exception e){
-            apiResponse = new ApiResponse(HttpStatus.BAD_REQUEST, "회원 가입 실패");
+            apiResponse = new ApiResponse(400, "회원 가입 실패");
             log.info(e.toString());
 
         }
@@ -82,6 +91,7 @@ public class UserService {
     public ApiResponse getUser(String email){
         ApiResponse apiResponse = null;
         UserEntity userEntity = userRepository.findByEmail(email);
+
         ResponseUserDto responseUserDto = ResponseUserDto.builder()
                 .email(userEntity.getEmail())
                 .name(userEntity.getName())
@@ -89,7 +99,7 @@ public class UserService {
                 .build()
                 ;
 
-        apiResponse = new ApiResponse(HttpStatus.OK, "회원 조회 성공");
+        apiResponse = new ApiResponse(200, "회원 조회 성공");
         apiResponse.putData("user", responseUserDto);
 
         return apiResponse;
@@ -133,4 +143,12 @@ public class UserService {
 
         return apiResponse;
     }
+
+//    private Boolean validateDuplicateUser(RequestUserRegistDto userRegistDto) {
+//        Optional<UserEntity> optionalUserEntity = Optional.ofNullable(userRepository.findByEmail(userRegistDto.getEmail()));
+//        return optionalUserEntity.ifPresent();
+//        userEntity.ifPresent(findUser -> {
+//            throw new CUserDuplicatedException();
+//        });
+//    }
 }

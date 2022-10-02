@@ -19,6 +19,26 @@ spring:
       name: test
       password: test
 
+  redis:
+    host: 121.140.253.36
+    port: 6379
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: yoonsucker@gmail.com
+    password: gvcuihfzwolriatb
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          port: 25
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
 
 logging.level.org:
   springframework: info

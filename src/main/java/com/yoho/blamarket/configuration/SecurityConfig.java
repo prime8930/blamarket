@@ -41,6 +41,8 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                     .antMatchers(HttpMethod.POST, "/user").permitAll()
+                    .antMatchers(HttpMethod.GET, "/").permitAll()
+                    .antMatchers("/auth/**").permitAll()
                     .anyRequest().authenticated()
                 .and().build();
     }
