@@ -5,14 +5,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name="item")
+@EntityListeners(AuditingEntityListener.class)
 public class ItemEntity {
 
     @Id
@@ -32,6 +37,7 @@ public class ItemEntity {
 
     String usedDate;
 
+    @CreatedDate
     String registDate;
 
     String status;
@@ -40,8 +46,12 @@ public class ItemEntity {
 
     String Category;
 
-    long wish;
-
     String deleteFlag;
+
+    @PrePersist
+    public void onPrePersist(){
+        this.registDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
+
 
 }

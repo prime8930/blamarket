@@ -5,19 +5,27 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name="comments")
+@EntityListeners(AuditingEntityListener.class)
+@SQLDelete(sql = "UPDATE comments SET delete_flag = true WHERE id = ?")
+@Where(clause = "delete_flag = false")
 public class CommentsEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
     @Column(nullable = false)
@@ -31,8 +39,14 @@ public class CommentsEntity {
 
     long parentsComment;
 
+    @CreatedDate
     String regDate;
 
-    String deleteFlag;
+    boolean deleteFlag = Boolean.FALSE; // 삭제 여부 기본값 false
+
+    @PrePersist
+    public void onPrePersist(){
+        this.regDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
 
 }
