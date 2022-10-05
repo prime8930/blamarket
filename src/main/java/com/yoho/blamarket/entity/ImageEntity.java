@@ -6,9 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.sql.Blob;
 
 @Data
 @Builder
@@ -18,6 +17,7 @@ import javax.persistence.Id;
 public class ImageEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
     @Column(nullable = false)
@@ -27,4 +27,5 @@ public class ImageEntity {
     String path;
 
     String deleteFlag;
+
 }

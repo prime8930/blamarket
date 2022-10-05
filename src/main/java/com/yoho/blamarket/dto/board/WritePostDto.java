@@ -1,14 +1,23 @@
 package com.yoho.blamarket.dto.board;
 
-import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 public class WritePostDto {
 
+    private String email;
     private String title;
     private String contents;
-    private List<String> imageList;
+    private MultipartFile[] imageList;
     private String category;
-    private String price;
+    private long price;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public String getTitle() {
         return title;
@@ -26,11 +35,11 @@ public class WritePostDto {
         this.contents = contents;
     }
 
-    public List<String> getImageList() {
+    public MultipartFile[] getImageList() {
         return imageList;
     }
 
-    public void setImageList(List<String> imageList) {
+    public void setImageList(MultipartFile[] imageList) {
         this.imageList = imageList;
     }
 
@@ -42,11 +51,11 @@ public class WritePostDto {
         this.category = category;
     }
 
-    public String getPrice() {
+    public long getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(long price) {
         this.price = price;
     }
 }
