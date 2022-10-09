@@ -1,39 +1,73 @@
 package com.yoho.blamarket.configuration;
 
-
+import com.yoho.blamarket.entity.UserEntity;
+import com.yoho.blamarket.jwt.JwtAuthenticationFilter;
+import com.yoho.blamarket.jwt.JwtAuthorizationFilter;
+import com.yoho.blamarket.repository.UserRepository;
+import com.yoho.blamarket.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+
+// https://github.com/spring-projects/spring-security/issues/10822 참고
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity // 시큐리티 활성화 -> 기본 스프링 필터체인에 등록
 public class SecurityConfig {
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-        http
-                .cors().and()
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http
                 .csrf().disable()
-                .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                    .and()
-                .authorizeRequests()
-                    .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .antMatchers("/**").permitAll()
-                        .anyRequest().permitAll()
-                    .and()
+                .cors().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
                 .formLogin().disable()
-        ;
-        return http.build();
+                .httpBasic().disable()
+                .apply(new MyCustomDsl())
+                .and()
+                .authorizeRequests()
+                    .antMatchers(HttpMethod.POST, "/user").permitAll()
+                    .antMatchers(HttpMethod.GET, "/").permitAll()
+                    .antMatchers("/auth/**").permitAll()
+                    .anyRequest().authenticated()
+                .and().build();
     }
 
+    public class MyCustomDsl extends AbstractHttpConfigurer<MyCustomDsl, HttpSecurity> {
+        @Override
+        public void configure(HttpSecurity http) throws Exception {
+            AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
+            http
+                    .addFilter(new JwtAuthenticationFilter(authenticationManager))
+                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository))
+            ;
+        }
+
+        public MyCustomDsl customDsl() {
+            return new MyCustomDsl();
+        }
+    }
     @Bean
     public BCryptPasswordEncoder encodePassword(){
         return new BCryptPasswordEncoder();
     }
+
 }
+
+
+
+

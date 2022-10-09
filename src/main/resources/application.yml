@@ -11,13 +11,33 @@ spring:
     properties:
       hibernate:
         diarect: org.hibernate.dialect.H2Dialect
-        show_sql: true
+        show_sql: false
         format_sql: true
         use_sql_comments: true
   security:
     user:
       name: test
       password: test
+
+  redis:
+    host: 121.140.253.36
+    port: 6379
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: yoonsucker@gmail.com
+    password: gvcuihfzwolriatb
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          port: 25
+          auth: true
+          starttls:
+            enable: true
+            required: true
 
 
 logging.level.org:
