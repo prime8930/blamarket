@@ -1,13 +1,16 @@
 package com.yoho.blamarket.dto.user;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Builder
-public class RequestUserRegistDto {
+public class RequestEditUserDto {
 
     private String email;
     private String password;
     private String name;
+    private String company;
 }

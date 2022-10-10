@@ -8,25 +8,25 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class ApiResponse {
+public class ErrorResponse {
 
     private int status;
     private String message;
     private Map<String, Object> result;
 
-    public ApiResponse(){
+    public ErrorResponse(){
         this.status = 200;
         this.message = "";
         this.result = new HashMap<String, Object>();
     }
 
-    public ApiResponse(int status, String message, Map<String, Object> map){
+    public ErrorResponse(int status, String message, Map<String, Object> map){
         this.status = status;
         this.message = message;
         this.result = map;
     }
 
-    public ApiResponse(int status, String message){
+    public ErrorResponse(int status, String message){
         this.status = status;
         this.message = message;
         this.result = new HashMap<String, Object>();
