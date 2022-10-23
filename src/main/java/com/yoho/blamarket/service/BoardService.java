@@ -10,6 +10,10 @@ import com.yoho.blamarket.repository.ItemRepository;
 import com.yoho.blamarket.repository.ImageRepository;
 import com.yoho.blamarket.repository.WishRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,10 +37,11 @@ public class BoardService {
         this.commentsRepository = commentsRepository;
     }
 
-    /** 전체 게시글 조회 */
-    public BoardResults getAllPosts() {
+    /** 전체 게시글 조회
+     * @param page */
+    public BoardResults getAllPosts(int page) {
         List<RequestAllPostsDto> requestAllPostsDtoList = new ArrayList<>();
-        List<ItemEntity> itemInfoList = itemRepository.findAll();       // 게시글
+        Page<ItemEntity> itemInfoList = itemRepository.findAll(PageRequest.of(page-1, 3, Sort.by(Sort.Direction.DESC, "registDate")));       // 게시글
 
         for (ItemEntity itemEntity : itemInfoList) {
             long itemId = itemEntity.getId();
