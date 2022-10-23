@@ -40,6 +40,8 @@ public class SecurityConfig {
                     .antMatchers(HttpMethod.GET, "/").permitAll()
                     .antMatchers("/auth/**").permitAll()
                     .antMatchers("/post/**").permitAll()
+                    .antMatchers("/ws/chat").permitAll()
+                    .antMatchers("/chat/**").permitAll()
                     .anyRequest().authenticated()
                 .and().build();
     }
