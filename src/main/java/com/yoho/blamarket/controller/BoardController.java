@@ -5,6 +5,9 @@ import com.yoho.blamarket.entity.ImageEntity;
 import com.yoho.blamarket.entity.ItemEntity;
 import com.yoho.blamarket.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +26,8 @@ public class BoardController {
     }
 
     @GetMapping("/view")
-    public BoardResults getAllPosts() {
-        return boardService.getAllPosts();
+    public BoardResults getAllPosts(@RequestParam(defaultValue = "1", value = "page") int page) {
+        return boardService.getAllPosts(page);
     }
 
     @GetMapping("/viewDetail")
