@@ -48,6 +48,9 @@ public class ItemEntity {
 
     String deleteFlag;
 
+    @Column(nullable = false)
+    long companyId;
+
     @PrePersist
     public void onPrePersist(){
         this.registDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));

@@ -26,8 +26,9 @@ public class BoardController {
     }
 
     @GetMapping("/view")
-    public BoardResults getAllPosts(@RequestParam(defaultValue = "1", value = "page") int page) {
-        return boardService.getAllPosts(page);
+    public BoardResults getAllPosts(@RequestParam(defaultValue = "1", value="page") int page,
+                                    @RequestParam(value="companyId") long companyId) {
+        return boardService.getAllPosts(page, companyId);
     }
 
     @GetMapping("/viewDetail")

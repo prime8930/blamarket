@@ -39,9 +39,9 @@ public class BoardService {
 
     /** 전체 게시글 조회
      * @param page */
-    public BoardResults getAllPosts(int page) {
+    public BoardResults getAllPosts(int page, long companyId) {
         List<RequestAllPostsDto> requestAllPostsDtoList = new ArrayList<>();
-        Page<ItemEntity> itemInfoList = itemRepository.findAll(PageRequest.of(page-1, 3, Sort.by(Sort.Direction.DESC, "registDate")));       // 게시글
+        Page<ItemEntity> itemInfoList = itemRepository.findAllByCompanyId(PageRequest.of(page-1, 3, Sort.by(Sort.Direction.DESC, "registDate")), companyId);       // 게시글
 
         for (ItemEntity itemEntity : itemInfoList) {
             long itemId = itemEntity.getId();
@@ -130,6 +130,7 @@ public class BoardService {
                     .contents(writeInfo.getContents())
                     .price(writeInfo.getPrice())
                     .Category(writeInfo.getCategory())
+                    .companyId(writeInfo.getCompanyId())
                     .build();
 
             ItemEntity itemSave = itemRepository.save(itemEntity);
