@@ -10,6 +10,7 @@ public class WritePostDto {
     private MultipartFile[] imageList;
     private String category;
     private long price;
+    private long companyId;
 
     public String getEmail() {
         return email;
@@ -57,5 +58,13 @@ public class WritePostDto {
 
     public void setPrice(long price) {
         this.price = price;
+    }
+
+    public long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(long companyId) {
+        this.companyId = companyId;
     }
 }
