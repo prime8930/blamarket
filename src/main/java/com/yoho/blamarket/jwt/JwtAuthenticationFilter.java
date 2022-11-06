@@ -1,6 +1,7 @@
 package com.yoho.blamarket.jwt;
 
 import com.yoho.blamarket.dto.user.JwtUserDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 /**
  * JWT를 이용한 로그인 인증
  */
+@Slf4j
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
@@ -50,7 +52,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             FilterChain chain,
             Authentication authResult
     ) throws IOException {
-        System.out.println("성공!!");
         JwtUserDto jwtUserDto = (JwtUserDto) authResult.getPrincipal();
         String token = JwtUtils.createToken(jwtUserDto);
 
@@ -63,7 +64,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             HttpServletResponse response,
             AuthenticationException failed
     ) throws IOException {
-        System.out.println("실패");
     }
 
 }

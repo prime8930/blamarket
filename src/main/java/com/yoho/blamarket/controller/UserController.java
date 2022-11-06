@@ -5,12 +5,18 @@ import com.yoho.blamarket.common.ApiResponse;
 import com.yoho.blamarket.dto.user.RequestEditUserDto;
 import com.yoho.blamarket.dto.user.RequestUserRegistDto;
 import com.yoho.blamarket.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+
+@Slf4j
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -51,6 +57,23 @@ public class UserController {
     public ResponseEntity<ApiResponse> deleteUter(@RequestBody RequestEditUserDto requestEditUserDto){
 
         ApiResponse apiResponse = userService.editUser(requestEditUserDto);
+
+        return new ResponseEntity(apiResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("jwt-user")
+    public ResponseEntity<ApiResponse> getUserWithJwt(@RequestHeader("JWT-AUTHENTICATION") String jwtToken){
+
+        log.info(jwtToken);
+        ApiResponse apiResponse = userService.getUserWithJwtToken(jwtToken);
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/jwt")
+    public ResponseEntity<ApiResponse> refreshToken(HttpServletRequest request, HttpServletResponse response){
+
+        ApiResponse apiResponse = userService.refreshJwtToken(request, response);
 
         return new ResponseEntity(apiResponse, HttpStatus.OK);
     }
