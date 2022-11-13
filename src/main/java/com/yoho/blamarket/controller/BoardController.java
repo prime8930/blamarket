@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 
 
 @RestController
@@ -61,4 +62,5 @@ public class BoardController {
     public RequestResults deleteComments(long commentId) {
         return boardService.deleteComments(commentId);
     }
+
 }

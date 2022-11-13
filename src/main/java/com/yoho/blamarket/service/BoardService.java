@@ -1,14 +1,9 @@
 package com.yoho.blamarket.service;
 
 import com.yoho.blamarket.dto.board.*;
-import com.yoho.blamarket.entity.CommentsEntity;
-import com.yoho.blamarket.entity.ImageEntity;
-import com.yoho.blamarket.entity.ItemEntity;
-import com.yoho.blamarket.entity.WishEntity;
-import com.yoho.blamarket.repository.CommentsRepository;
-import com.yoho.blamarket.repository.ItemRepository;
-import com.yoho.blamarket.repository.ImageRepository;
-import com.yoho.blamarket.repository.WishRepository;
+import com.yoho.blamarket.entity.*;
+import com.yoho.blamarket.repository.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,19 +17,22 @@ import java.io.File;
 import java.util.*;
 
 @Service
+@Slf4j
 public class BoardService {
 
     private ItemRepository itemRepository;
     private ImageRepository imageRepository;
     private WishRepository wishRepository;
     private CommentsRepository commentsRepository;
+    private CategoryRepository categoryRepository;
 
     @Autowired
-    public BoardService(ItemRepository itemRepository, ImageRepository imageRepository, WishRepository wishRepository, CommentsRepository commentsRepository) {
+    public BoardService(ItemRepository itemRepository, ImageRepository imageRepository, WishRepository wishRepository, CommentsRepository commentsRepository, CategoryRepository categoryRepository) {
         this.itemRepository = itemRepository;
         this.imageRepository = imageRepository;
         this.wishRepository = wishRepository;
         this.commentsRepository = commentsRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     /** 전체 게시글 조회
@@ -70,7 +68,7 @@ public class BoardService {
     // 추가 필요 1. 게시글 조회 시 조회수 1 증가
     public PostResults getPostByItemId(long itemId) {
         ItemEntity itemInfo = itemRepository.findById(itemId);
-        Map<String, String> imageInfoMap = getImageInfo(itemId);
+        List<String> imageInfoMap = getImageInfo(itemId);
         Map<String, Object> wishInfoMap = getWishInfo(itemId);
 
         RequestPostDto requestPostDto = new RequestPostDto(itemInfo, imageInfoMap, wishInfoMap);
@@ -105,18 +103,18 @@ public class BoardService {
     }
 
     /** 이미지 정보 가져오기 */
-    private Map<String, String> getImageInfo(long itemId) {
+    private List<String> getImageInfo(long itemId) {
         List<ImageEntity> imageInfo = imageRepository.findByItemId(itemId);
-        Map<String, String> imageInfoMap = new HashMap<>();
+        List<String> imageInfoList = new ArrayList<>();
 
         if( imageInfo != null ) {
             for (int i = 1; i<=imageInfo.size(); i++) {
                 String path = imageInfo.get(i-1).getPath();
-                imageInfoMap.put("image" + i, path);
+                imageInfoList.add(path);
             }
         }
 
-        return imageInfoMap;
+        return imageInfoList;
     }
 
     /** 게시글 등록 */
@@ -137,10 +135,10 @@ public class BoardService {
 
             for (MultipartFile multipartFile : writeInfo.getImageList()) {
 
-                UUID uuid = UUID.randomUUID();
-                String folderPath = ResourceUtils.getURL("src/main/resources/img").getPath();
-
-                String savedPath = folderPath + "\\" + uuid + multipartFile.getName();
+//                UUID uuid = UUID.randomUUID();
+//                String folderPath = ResourceUtils.getURL("src/main/resources/img").getPath();
+                String folderPath = "/usr/local/tomcat/temp/test/";
+                String savedPath = folderPath + multipartFile.getName();
 
                 ImageEntity imageEntity = ImageEntity.builder()
                         .itemId(itemSave.getId())
@@ -159,6 +157,7 @@ public class BoardService {
         } catch(Exception e) {
             requestResults.setStatus(400);
             requestResults.setMessage("fail");
+            log.error("post.write: " + e);
         }
 
         return requestResults;
