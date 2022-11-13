@@ -3,6 +3,7 @@ package com.yoho.blamarket.dto.board;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.yoho.blamarket.entity.ItemEntity;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -18,10 +19,10 @@ public class RequestPostDto {
     private String status;
     private String view_count;
     private String category;
-    private Map<String, String> images;
+    private List<String> images;
     private Map<String, Object> wish;
 
-    public RequestPostDto(ItemEntity itemEntity, Map<String, String> imageEntity, Map<String, Object> wishEntity) {
+    public RequestPostDto(ItemEntity itemEntity, List<String> imageEntity, Map<String, Object> wishEntity) {
         this.id = itemEntity.getId();
         this.email = itemEntity.getEmail();
         this.title = itemEntity.getTitle();
@@ -76,7 +77,7 @@ public class RequestPostDto {
         return category;
     }
 
-    public Map<String, String> getImages() {
+    public List<String> getImages() {
         return images;
     }
 
