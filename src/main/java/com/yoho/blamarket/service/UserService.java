@@ -153,7 +153,7 @@ public class UserService {
                 ;
 
         apiResponse = new ApiResponse(200, "회원 조회 성공");
-        apiResponse.putData("user", responseUserDto);
+        apiResponse.putData("data", responseUserDto);
 
         return apiResponse;
     }

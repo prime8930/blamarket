@@ -21,8 +21,13 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity // 시큐리티 활성화 -> 기본 스프링 필터체인에 등록
 public class SecurityConfig {
 
+    private final UserRepository userRepository;
+
     @Autowired
-    private UserRepository userRepository;
+    public SecurityConfig(UserRepository userRepository) {
+        this.userRepository = userRepository;
+
+    }
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -47,11 +52,14 @@ public class SecurityConfig {
     }
 
     public class MyCustomDsl extends AbstractHttpConfigurer<MyCustomDsl, HttpSecurity> {
+
+
+
         @Override
         public void configure(HttpSecurity http) throws Exception {
             AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
             http
-                    .addFilter(new JwtAuthenticationFilter(authenticationManager))
+                    .addFilter(new JwtAuthenticationFilter(authenticationManager, userRepository))
                     .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository))
             ;
         }

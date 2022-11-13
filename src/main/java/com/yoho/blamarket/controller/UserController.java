@@ -70,7 +70,7 @@ public class UserController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-    @GetMapping("/jwt")
+    @GetMapping("/token")
     public ResponseEntity<ApiResponse> refreshToken(HttpServletRequest request, HttpServletResponse response){
 
         ApiResponse apiResponse = userService.refreshJwtToken(request, response);
