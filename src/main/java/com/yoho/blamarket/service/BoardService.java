@@ -35,8 +35,7 @@ public class BoardService {
         this.categoryRepository = categoryRepository;
     }
 
-    /** 전체 게시글 조회
-     * @param page */
+    /** 전체 게시글 조회 */
     public BoardResults getAllPosts(int page, long companyId) {
         List<RequestAllPostsDto> requestAllPostsDtoList = new ArrayList<>();
         Page<ItemEntity> itemInfoList = itemRepository.findAllByCompanyId(PageRequest.of(page-1, 3, Sort.by(Sort.Direction.DESC, "registDate")), companyId);       // 게시글
@@ -60,7 +59,7 @@ public class BoardService {
         }
 
         boardResults.setResult(requestAllPostsDtoList);
-        
+
         return boardResults;
     }
 
@@ -68,6 +67,11 @@ public class BoardService {
     // 추가 필요 1. 게시글 조회 시 조회수 1 증가
     public PostResults getPostByItemId(long itemId) {
         ItemEntity itemInfo = itemRepository.findById(itemId);
+
+        String categoryId = itemInfo.getCategory();
+        CategoryEntity categoryInfo = categoryRepository.findById(Long.parseLong(categoryId));
+        itemInfo.setCategory(categoryInfo.getName());
+
         List<String> imageInfoMap = getImageInfo(itemId);
         Map<String, Object> wishInfoMap = getWishInfo(itemId);
 
@@ -138,7 +142,7 @@ public class BoardService {
 //                UUID uuid = UUID.randomUUID();
 //                String folderPath = ResourceUtils.getURL("src/main/resources/img").getPath();
                 String folderPath = "/usr/local/tomcat/temp/test/";
-                String savedPath = folderPath + multipartFile.getName();
+                String savedPath = folderPath + multipartFile.getOriginalFilename();
 
                 ImageEntity imageEntity = ImageEntity.builder()
                         .itemId(itemSave.getId())
@@ -180,8 +184,6 @@ public class BoardService {
 
         return requestResults;
     }
-
-    /** 게시글 수정 */
 
     /** 댓글 조회 */
     public CommentsResults getAllComments(long itemId) {
@@ -234,6 +236,7 @@ public class BoardService {
         } catch(Exception e) {
             requestResults.setStatus(400);
             requestResults.setMessage("fail");
+            log.error("post.write: " + e);
         }
 
         return requestResults;
