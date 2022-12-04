@@ -139,9 +139,18 @@ public class BoardService {
 
             for (MultipartFile multipartFile : writeInfo.getImageList()) {
 
-//                UUID uuid = UUID.randomUUID();
 //                String folderPath = ResourceUtils.getURL("src/main/resources/img").getPath();
-                String folderPath = "/usr/local/tomcat/temp/test/";
+                String folderPath = "/usr/local/tomcat/temp/test/" + itemEntity.getId() + "/";
+                File folder = new File(folderPath);
+
+                if (!folder.exists()) {
+                    try{
+                        folder.mkdir();
+                    } catch(Exception e){
+                        e.getStackTrace();
+                    }
+                }
+
                 String savedPath = folderPath + multipartFile.getOriginalFilename();
 
                 ImageEntity imageEntity = ImageEntity.builder()
