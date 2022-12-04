@@ -19,7 +19,7 @@ public class AuthService {
 
     // 이부분 고민해봐야것다 빈으로 등록이 안돼서 생긴는 문제인데
     // 어떻게 처리해야할지 모르것다.
-    @Autowired
+//    @Autowired
     private JavaMailSenderImpl mailSender;
 
     @Autowired
