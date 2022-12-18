@@ -53,8 +53,6 @@ public class SecurityConfig {
 
     public class MyCustomDsl extends AbstractHttpConfigurer<MyCustomDsl, HttpSecurity> {
 
-
-
         @Override
         public void configure(HttpSecurity http) throws Exception {
             AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
@@ -68,6 +66,7 @@ public class SecurityConfig {
             return new MyCustomDsl();
         }
     }
+
     @Bean
     public BCryptPasswordEncoder encodePassword(){
         return new BCryptPasswordEncoder();

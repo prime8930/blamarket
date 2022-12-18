@@ -3,6 +3,7 @@ package com.yoho.blamarket.jwt;
 import com.yoho.blamarket.dto.user.JwtUserDto;
 import com.yoho.blamarket.entity.UserEntity;
 import com.yoho.blamarket.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,6 +19,7 @@ import java.io.IOException;
 /**
  * JWT를 이용한 인증
  */
+@Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     private final UserRepository userRepository;
@@ -46,7 +48,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             }
             token = request.getHeader(JwtProperties.HEADER_STRING)
                     .replace(JwtProperties.TOKEN_PREFIX, "");
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            log.info("토큰 가져오는 중 에러 : {} ", e.getMessage());
         }
 
         if (token != null) {
@@ -63,13 +66,16 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     private Authentication getUsernamePasswordAuthenticationToken(String token) {
         String userEmail = JwtUtils.getUserEmail(token);
         if (userEmail != null) {
-            UserEntity userEntity = userRepository.findByEmail(userEmail); // 유저를 유저명으로 찾습니다.
+            // 유저를 유저명으로 찾습니다.
+            UserEntity userEntity = userRepository.findByEmail(userEmail);
+
             JwtUserDto jwtUserDto = JwtUserDto.builder()
                     .email(userEntity.getEmail())
                     .password(userEntity.getPassword())
                     .authority(userEntity.getRoles())
                     .build()
                     ;
+
             return new UsernamePasswordAuthenticationToken(
                     jwtUserDto, // principal
                     null,
