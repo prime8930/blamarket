@@ -1,17 +1,13 @@
 package com.yoho.blamarket.controller;
 
 import com.yoho.blamarket.dto.board.*;
-import com.yoho.blamarket.entity.ImageEntity;
-import com.yoho.blamarket.entity.ItemEntity;
+import com.yoho.blamarket.jwt.JwtProperties;
+import com.yoho.blamarket.jwt.JwtUtils;
 import com.yoho.blamarket.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 
 
@@ -33,10 +29,14 @@ public class BoardController {
     }
 
     @GetMapping("/viewDetail")
-    public PostResults getPostByItemId(long itemId) {
-        return boardService.getPostByItemId(itemId);
+    public PostResults getPostByItemId(HttpServletRequest request, long itemId) {
+        return boardService.getPostByItemId(request, itemId);
     }
 
+    @GetMapping("/edit")
+    public PostResults callEditPost(HttpServletRequest request, long itemId) {
+        return boardService.callEditPost(request, itemId);
+    }
 
     @RequestMapping("/write")
     public RequestResults writePost(WritePostDto writeInfo) {
@@ -61,6 +61,11 @@ public class BoardController {
     @RequestMapping("/comments/delete")
     public RequestResults deleteComments(long commentId) {
         return boardService.deleteComments(commentId);
+    }
+
+    @RequestMapping("/like")
+    public RequestResults likePost(HttpServletRequest request, long itemId) {
+        return boardService.likePost(request, itemId);
     }
 
 }

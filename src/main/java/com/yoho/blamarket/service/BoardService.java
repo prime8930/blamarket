@@ -2,18 +2,20 @@ package com.yoho.blamarket.service;
 
 import com.yoho.blamarket.dto.board.*;
 import com.yoho.blamarket.entity.*;
+import com.yoho.blamarket.jwt.JwtProperties;
+import com.yoho.blamarket.jwt.JwtUtils;
 import com.yoho.blamarket.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.net.InetAddress;
 import java.util.*;
 
 @Service
@@ -25,6 +27,20 @@ public class BoardService {
     private WishRepository wishRepository;
     private CommentsRepository commentsRepository;
     private CategoryRepository categoryRepository;
+
+    public String getMyIpAddress() {
+        String myIp = "";
+
+        try {
+            InetAddress local = InetAddress.getLocalHost();
+            myIp = local.getHostAddress();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+
+        return myIp;
+    }
+
 
     @Autowired
     public BoardService(ItemRepository itemRepository, ImageRepository imageRepository, WishRepository wishRepository, CommentsRepository commentsRepository, CategoryRepository categoryRepository) {
@@ -64,8 +80,9 @@ public class BoardService {
     }
 
     /** 게시글 조회 */
-    // 추가 필요 1. 게시글 조회 시 조회수 1 증가
-    public PostResults getPostByItemId(long itemId) {
+    public PostResults getPostByItemId(HttpServletRequest request, long itemId) {
+
+        itemRepository.updateView(itemId);  // 조회수 1 증가
         ItemEntity itemInfo = itemRepository.findById(itemId);
 
         String categoryId = itemInfo.getCategory();
@@ -73,9 +90,10 @@ public class BoardService {
         itemInfo.setCategory(categoryInfo.getName());
 
         List<String> imageInfoMap = getImageInfo(itemId);
-        Map<String, Object> wishInfoMap = getWishInfo(itemId);
+        WishEntity wishInfo = getWishInfo(request, itemId);
+        int wish = wishInfo == null ? 0 : 1;
 
-        RequestPostDto requestPostDto = new RequestPostDto(itemInfo, imageInfoMap, wishInfoMap);
+        RequestPostDto requestPostDto = new RequestPostDto(itemInfo, imageInfoMap, wish);
 
         PostResults postResults = new PostResults();
 
@@ -94,16 +112,13 @@ public class BoardService {
     }
 
     /** 좋아요 정보 가져오기 */
-    private Map<String, Object> getWishInfo(long itemId) {
-        WishEntity wishInfo = wishRepository.findByItem(itemId);
-        Map<String, Object> wishInfoMap = new HashMap<>();
+    private WishEntity getWishInfo(HttpServletRequest request, long itemId) {
+        String requestToken = request.getHeader(JwtProperties.HEADER_STRING).substring(7);
+        String email = JwtUtils.getUserEmail(requestToken);
 
-        if(wishInfo != null ) {
-            wishInfoMap.put("item", wishInfo.getItem());
-            wishInfoMap.put("email", wishInfo.getEmail());
-        }
+        WishEntity wishInfo = wishRepository.findByItemAndEmail(itemId, email);
 
-        return wishInfoMap;
+        return wishInfo;
     }
 
     /** 이미지 정보 가져오기 */
@@ -136,12 +151,16 @@ public class BoardService {
                     .build();
 
             ItemEntity itemSave = itemRepository.save(itemEntity);
+            long itemId = itemEntity.getId();
+
+            StringBuilder serverSavePath = new StringBuilder();
+            serverSavePath.append("/usr/local/tomcat/temp/test/");
+            serverSavePath.append(itemId);
+            serverSavePath.append("/");
 
             for (MultipartFile multipartFile : writeInfo.getImageList()) {
-
-//                String folderPath = ResourceUtils.getURL("src/main/resources/img").getPath();
-                String folderPath = "/usr/local/tomcat/temp/test/" + itemEntity.getId() + "/";
-                File folder = new File(folderPath);
+                StringBuilder imgPath = new StringBuilder();
+                File folder = new File(serverSavePath.toString());
 
                 if (!folder.exists()) {
                     try{
@@ -151,14 +170,19 @@ public class BoardService {
                     }
                 }
 
-                String savedPath = folderPath + multipartFile.getOriginalFilename();
+                serverSavePath.append(multipartFile.getOriginalFilename());
+
+                imgPath.append("/img/");
+                imgPath.append(itemId);
+                imgPath.append("/");
+                imgPath.append(multipartFile.getOriginalFilename());
 
                 ImageEntity imageEntity = ImageEntity.builder()
                         .itemId(itemSave.getId())
-                        .path(savedPath)
+                        .path(imgPath.toString())
                         .build();
 
-                File saveFile = new File(savedPath);
+                File saveFile = new File(serverSavePath.toString());
                 multipartFile.transferTo(saveFile);
 
                 imageRepository.save(imageEntity);
@@ -174,6 +198,36 @@ public class BoardService {
         }
 
         return requestResults;
+    }
+
+    /** 게시글 수정(GET) */
+    public PostResults callEditPost(HttpServletRequest request, long itemId) {
+        PostResults postResults = new PostResults();
+
+        ItemEntity itemInfo = itemRepository.findById(itemId);
+        String itemEmail = itemInfo.getEmail();
+
+        String requestToken = request.getHeader(JwtProperties.HEADER_STRING).substring(7);
+        String requestEmail = JwtUtils.getUserEmail(requestToken);
+
+        if(itemEmail.equals(requestEmail)) {
+            String categoryId = itemInfo.getCategory();
+            CategoryEntity categoryInfo = categoryRepository.findById(Long.parseLong(categoryId));
+            itemInfo.setCategory(categoryInfo.getName());
+
+            List<String> imageInfoMap = getImageInfo(itemId);
+
+            RequestPostDto requestPostDto = new RequestPostDto(itemInfo, imageInfoMap);
+
+            postResults.setStatus(200);
+            postResults.setMessage("success");
+            postResults.setResult(requestPostDto);
+        } else {
+            postResults.setStatus(400);
+            postResults.setMessage("fail");
+        }
+
+        return postResults;
     }
 
     /** 게시글 삭제 */
@@ -251,6 +305,34 @@ public class BoardService {
         return requestResults;
     }
 
+    /** 게시글 좋아요(북마크) */
+    public RequestResults likePost(HttpServletRequest request, long itemId) {
+        RequestResults requestResults = new RequestResults();
 
+        String requestToken = request.getHeader(JwtProperties.HEADER_STRING).substring(7);
+        String email = JwtUtils.getUserEmail(requestToken);
 
+        WishEntity wishInfo = wishRepository.findByItemAndEmail(itemId, email);
+        try {
+            if(wishInfo == null) {
+                WishEntity wishEntity = WishEntity.builder()
+                        .email(email)
+                        .id(itemId)
+                        .build();
+
+                wishRepository.save(wishEntity);
+            } else {
+                wishRepository.deleteById(wishInfo.getId());
+            }
+
+            requestResults.setStatus(200);
+            requestResults.setMessage("success");
+        } catch(Exception e) {
+            requestResults.setStatus(400);
+            requestResults.setMessage("fail");
+            log.error("post.write: " + e);
+        }
+
+        return requestResults;
+    }
 }

@@ -35,14 +35,12 @@ public class ItemEntity {
 
     long price;
 
-    String usedDate;
-
     @CreatedDate
     String registDate;
 
-    String status;
+    int status;
 
-    String viewCount;
+    long viewCount;
 
     String Category;
 

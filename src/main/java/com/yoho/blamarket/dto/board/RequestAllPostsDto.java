@@ -13,8 +13,7 @@ public class RequestAllPostsDto {
     private String thumbnail;
     private long price;
     private String date;
-    private String used_date;
-    private String view_count;
+    private long view_count;
 
     public RequestAllPostsDto(ItemEntity item, ImageEntity image) {
         this.id = item.getId();
@@ -23,7 +22,6 @@ public class RequestAllPostsDto {
         this.thumbnail = image.getPath();
         this.price = item.getPrice();
         this.date = item.getRegistDate();
-        this.used_date = item.getUsedDate();
         this.view_count = item.getViewCount();
     }
 
@@ -51,11 +49,7 @@ public class RequestAllPostsDto {
         return date;
     }
 
-    public String getUsed_date() {
-        return used_date;
-    }
-
-    public String getView_count() {
+    public long getView_count() {
         return view_count;
     }
 }

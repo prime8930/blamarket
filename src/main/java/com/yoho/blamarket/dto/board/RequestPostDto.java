@@ -14,27 +14,36 @@ public class RequestPostDto {
     private String title;
     private String content;
     private long price;
-    private String used_date;
     private String date;
-    private String status;
-    private String view_count;
+    private int status;
+    private long view_count;
     private String category;
     private List<String> images;
-    private Map<String, Object> wish;
+    private int wish;
 
-    public RequestPostDto(ItemEntity itemEntity, List<String> imageEntity, Map<String, Object> wishEntity) {
+    public RequestPostDto(ItemEntity itemEntity, List<String> imageEntity, int wish) {
         this.id = itemEntity.getId();
         this.email = itemEntity.getEmail();
         this.title = itemEntity.getTitle();
         this.content = itemEntity.getContents();
         this.price = itemEntity.getPrice();
-        this.used_date = itemEntity.getUsedDate();
         this.date = itemEntity.getRegistDate();
         this.status = itemEntity.getStatus();
         this.view_count = itemEntity.getViewCount();
         this.category = itemEntity.getCategory();
         this.images = imageEntity;
-        this.wish = wishEntity;
+        this.wish = wish;
+    }
+
+    public RequestPostDto(ItemEntity itemEntity, List<String> imageEntity) {
+        this.id = itemEntity.getId();
+        this.email = itemEntity.getEmail();
+        this.title = itemEntity.getTitle();
+        this.content = itemEntity.getContents();
+        this.price = itemEntity.getPrice();
+        this.date = itemEntity.getRegistDate();
+        this.category = itemEntity.getCategory();
+        this.images = imageEntity;
     }
 
     public long getId() {
@@ -57,19 +66,15 @@ public class RequestPostDto {
         return price;
     }
 
-    public String getUsed_date() {
-        return used_date;
-    }
-
     public String getDate() {
         return date;
     }
 
-    public String getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public String getView_count() {
+    public long getView_count() {
         return view_count;
     }
 
@@ -81,7 +86,7 @@ public class RequestPostDto {
         return images;
     }
 
-    public Map<String, Object> getWish() {
+    public int getWish() {
         return wish;
     }
 }

@@ -42,7 +42,7 @@ public class CommentsEntity {
     @CreatedDate
     String regDate;
 
-    boolean deleteFlag = Boolean.FALSE; // 삭제 여부 기본값 false
+    boolean deleteFlag = Boolean.FALSE;
 
     @PrePersist
     public void onPrePersist(){
